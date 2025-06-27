@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - TrustCart{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5><i data-feather="message-circle"></i> Transaction Chat</h5>
+    </div>
+    <div class="card-body">
+        <div id="chat-messages" class="mb-3" style="height: 400px; overflow-y: auto; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; background-color: var(--bs-dark);">
+            <!-- Messages will be loaded here -->
+        </div>
+        
+        <form id="chat-form">
+            <div class="input-group">
+                <input type="text" id="message-input" class="form-control" placeholder="Type your message..." maxlength="500" required>
+                <button type="submit" class="btn btn-primary">
+                    <i data-feather="send"></i> Send
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

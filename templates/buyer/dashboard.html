@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Buyer Dashboard - TrustCart{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i data-feather="shopping-cart"></i> My Transactions</h1>
+    <a href="{{ url_for('create_transaction') }}" class="btn btn-primary">
+        <i data-feather="plus"></i> Create New Transaction
+    </a>
+</div>
+
+{% if transactions %}
+    <div class="row g-3">
+        {% for transaction in transactions %}
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="card-title">{{ transaction.title }}</h5>
+                                <p class="card-text text-muted">{{ transaction.description[:100] }}{% if transaction.description|length > 100 %}...{% endif %}</p>
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="badge 
+                                        {% if transaction.status == 'pending' %}bg-warning{% endif %}
+                                        {% if transaction.status == 'in_progress' %}bg-info{% endif %}
+                                        {% if transaction.status == 'completed' %}bg-success{% endif %}
+                                        {% if transaction.status == 'disputed' %}bg-danger{% endif %}
+                                    ">
+                                        {{ transaction.status.replace('_', ' ').title() }}
+                                    </span>
+                                    <small class="text-muted">
+                                        {% if transaction.seller %}
+                                            Seller: {{ transaction.seller.username }}
+                                        {% else %}
+                                            Waiting for seller
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <h4 class="text-success">${{ "%.2f"|format(transaction.amount) }}</h4>
+                                <small class="text-muted">{{ transaction.created_at.strftime('%B %d, %Y') }}</small>
+                                <div class="mt-2">
+                                    <a href="{{ url_for('buyer_transaction_detail', id=transaction.id) }}" class="btn btn-outline-primary btn-sm">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i data-feather="shopping-cart" style="width: 64px; height: 64px;" class="text-muted mb-3"></i>
+        <h3>No Transactions Yet</h3>
+        <p class="text-muted">Create your first transaction to get started with secure trading.</p>
+        <a href="{{ url_for('create_transaction') }}" class="btn btn-primary">
+            <i data-feather="plus"></i> Create Transaction
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

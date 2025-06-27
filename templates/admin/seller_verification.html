@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Verification - TrustCart{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i data-feather="user-check"></i> Seller Verification</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+        <i data-feather="arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if pending_sellers %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Registration Date</th>
+                            <th>Email Verified</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seller in pending_sellers %}
+                            <tr>
+                                <td>{{ seller.id }}</td>
+                                <td>
+                                    <i data-feather="user"></i> {{ seller.username }}
+                                </td>
+                                <td>{{ seller.email }}</td>
+                                <td>{{ seller.created_at.strftime('%B %d, %Y at %I:%M %p') }}</td>
+                                <td>
+                                    {% if seller.email_verified %}
+                                        <span class="badge bg-success">Verified</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('verify_seller', id=seller.id) }}" class="d-inline">
+                                        <div class="btn-group" role="group">
+                                            <button type="submit" name="action" value="approve" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to approve {{ seller.username }} as a verified seller?')">
+                                                <i data-feather="check"></i> Approve
+                                            </button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to reject {{ seller.username }}? This will remove their account.')">
+                                                <i data-feather="x"></i> Reject
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i data-feather="user-check" style="width: 64px; height: 64px;" class="text-muted mb-3"></i>
+                <h4>No Pending Verifications</h4>
+                <p class="text-muted">All seller applications have been processed.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

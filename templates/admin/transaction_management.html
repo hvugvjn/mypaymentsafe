@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction Management - TrustCart{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i data-feather="activity"></i> Transaction Management</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+        <i data-feather="arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if transactions %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Buyer</th>
+                            <th>Seller</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.id }}</td>
+                                <td>
+                                    <strong>{{ transaction.title }}</strong>
+                                    {% if transaction.description|length > 50 %}
+                                        <br><small class="text-muted">{{ transaction.description[:50] }}...</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <i data-feather="user"></i> {{ transaction.buyer.username }}
+                                </td>
+                                <td>
+                                    {% if transaction.seller %}
+                                        <i data-feather="user"></i> {{ transaction.seller.username }}
+                                    {% else %}
+                                        <span class="text-muted">No seller</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-success">${{ "%.2f"|format(transaction.amount) }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if transaction.status == 'pending' %}bg-warning{% endif %}
+                                        {% if transaction.status == 'in_progress' %}bg-info{% endif %}
+                                        {% if transaction.status == 'completed' %}bg-success{% endif %}
+                                        {% if transaction.status == 'disputed' %}bg-danger{% endif %}
+                                    ">
+                                        {{ transaction.status.replace('_', ' ').title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small>{{ transaction.created_at.strftime('%m/%d/%Y') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        {% if current_user.is_buyer() %}
+                                            <a href="{{ url_for('buyer_transaction_detail', id=transaction.id) }}" class="btn btn-outline-primary btn-sm">
+                                                <i data-feather="eye"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ url_for('seller_transaction_detail', id=transaction.id) }}" class="btn btn-outline-primary btn-sm">
+                                                <i data-feather="eye"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i data-feather="activity" style="width: 64px; height: 64px;" class="text-muted mb-3"></i>
+                <h4>No Transactions</h4>
+                <p class="text-muted">No transactions have been created yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

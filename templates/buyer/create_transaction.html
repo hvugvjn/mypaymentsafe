@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Create Transaction - TrustCart{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i data-feather="plus-circle" class="text-primary" style="width: 48px; height: 48px;"></i>
+                    <h3 class="mt-2">Create New Transaction</h3>
+                    <p class="text-muted">Describe what you need and a verified seller will help you</p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control") }}
+                        {% for error in form.title.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">Give your transaction a clear, descriptive title</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4") }}
+                        {% for error in form.description.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">Provide detailed requirements and expectations</div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.amount.label(class="form-label") }}
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form.amount(class="form-control") }}
+                        </div>
+                        {% for error in form.amount.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">This amount will be held in escrow until you confirm completion</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i data-feather="info" class="me-2"></i>
+                        <strong>How it works:</strong>
+                        <ol class="mb-0 mt-2">
+                            <li>Your transaction will be posted for verified sellers to see</li>
+                            <li>A seller will accept your transaction and begin work</li>
+                            <li>You can communicate directly through our chat system</li>
+                            <li>When satisfied, you release the payment to the seller</li>
+                        </ol>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('buyer_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

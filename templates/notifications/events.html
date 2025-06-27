@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - TrustCart{% endblock %}
+
+{% block content %}
+<h1><i data-feather="bell"></i> Notifications</h1>
+
+<div class="card">
+    <div class="card-body">
+        <div id="notification-list">
+            <div class="text-center py-4">
+                <i data-feather="bell-off" style="width: 48px; height: 48px;" class="text-muted mb-3"></i>
+                <h6>No Notifications</h6>
+                <p class="text-muted">You're all caught up!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Server-sent events for real-time notifications
+if (typeof(EventSource) !== "undefined") {
+    const eventSource = new EventSource("{{ url_for('notification_stream') }}");
+    
+    eventSource.onmessage = function(event) {
+        const notification = JSON.parse(event.data);
+        addNotificationToList(notification);
+        showNotificationToast(notification);
+    };
+    
+    eventSource.onerror = function(event) {
+        console.log("EventSource failed:", event);
+    };
+}
+
+function addNotificationToList(notification) {
+    const notificationList = document.getElementById('notification-list');
+    
+    // Remove "no notifications" message if present
+    const noNotifications = notificationList.querySelector('.text-center');
+    if (noNotifications) {
+        noNotifications.remove();
+    }
+    
+    // Create notification element
+    const notificationEl = document.createElement('div');
+    notificationEl.className = 'alert alert-info alert-dismissible fade show';
+    notificationEl.innerHTML = `
+        <strong>${notification.title}</strong>
+        <p class="mb-1">${notification.message}</p>
+        <small class="text-muted">${new Date(notification.created_at).toLocaleString()}</small>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" onclick="markAsRead(${notification.id})"></button>
+    `;
+    
+    notificationList.insertBefore(notificationEl, notificationList.firstChild);
+}
+
+function showNotificationToast(notification) {
+    // Create toast notification
+    const toast = document.createElement('div');
+    toast.className = 'toast show position-fixed top-0 end-0 m-3';
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="toast-header">
+            <i data-feather="bell" class="me-2"></i>
+            <strong class="me-auto">${notification.title}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            ${notification.message}
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    feather.replace();
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+function markAsRead(notificationId) {
+    fetch(`/notifications/mark-read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Pending - TrustCart{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="clock" class="text-warning mb-3" style="width: 64px; height: 64px;"></i>
+                <h3>Verification Pending</h3>
+                <p class="text-muted mb-4">
+                    Thank you for registering as a seller! Your account is currently under review by our admin team.
+                </p>
+                
+                <div class="alert alert-info text-start">
+                    <h6><i data-feather="info"></i> What happens next?</h6>
+                    <ul class="mb-0">
+                        <li>Our admin team will review your seller application</li>
+                        <li>This process typically takes 24-48 hours</li>
+                        <li>You'll receive an email notification once approved</li>
+                        <li>After approval, you can start accepting transactions</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-warning text-start">
+                    <h6><i data-feather="shield"></i> Why do we verify sellers?</h6>
+                    <p class="mb-0">
+                        TrustCart verifies all sellers to ensure safe, reliable transactions for buyers. 
+                        This verification process helps maintain the trust and security of our platform.
+                    </p>
+                </div>
+
+                <p class="text-muted">
+                    We'll email you at <strong>{{ current_user.email }}</strong> once your verification is complete.
+                </p>
+
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i data-feather="home"></i> Go to Homepage
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

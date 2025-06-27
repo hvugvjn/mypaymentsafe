@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - TrustCart{% endblock %}
+
+{% block content %}
+<h1><i data-feather="settings"></i> Admin Dashboard</h1>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="users" class="text-primary mb-2" style="width: 32px; height: 32px;"></i>
+                <h4>{{ total_users }}</h4>
+                <p class="text-muted mb-0">Total Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="activity" class="text-info mb-2" style="width: 32px; height: 32px;"></i>
+                <h4>{{ total_transactions }}</h4>
+                <p class="text-muted mb-0">Total Transactions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="check-circle" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
+                <h4>{{ completed_transactions }}</h4>
+                <p class="text-muted mb-0">Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="user-check" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                <h4>{{ pending_sellers|length }}</h4>
+                <p class="text-muted mb-0">Pending Sellers</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5><i data-feather="list"></i> Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin_transactions') }}" class="btn btn-outline-primary">
+                        <i data-feather="activity"></i> Manage All Transactions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Seller Verifications -->
+<div class="card">
+    <div class="card-header">
+        <h5><i data-feather="user-check"></i> Pending Seller Verifications</h5>
+    </div>
+    <div class="card-body">
+        {% if pending_sellers %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seller in pending_sellers %}
+                            <tr>
+                                <td>
+                                    <i data-feather="user"></i> {{ seller.username }}
+                                </td>
+                                <td>{{ seller.email }}</td>
+                                <td>{{ seller.created_at.strftime('%B %d, %Y') }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('verify_seller', id=seller.id) }}" class="d-inline">
+                                        <button type="submit" name="action" value="approve" class="btn btn-success btn-sm" onclick="return confirm('Approve this seller?')">
+                                            <i data-feather="check"></i> Approve
+                                        </button>
+                                        <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm" onclick="return confirm('Reject and remove this seller?')">
+                                            <i data-feather="x"></i> Reject
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i data-feather="user-check" style="width: 48px; height: 48px;" class="text-muted mb-3"></i>
+                <h6>No Pending Verifications</h6>
+                <p class="text-muted">All sellers have been verified.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
