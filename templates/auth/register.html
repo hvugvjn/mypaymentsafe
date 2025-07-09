@@ -41,24 +41,11 @@
                     </div>
 
                     <div class="mb-3">
-                        {{ form.password2.label(class="form-label") }}
-                        {{ form.password2(class="form-control") }}
-                        {% for error in form.password2.errors %}
+                        {{ form.confirm_password.label(class="form-label") }}
+                        {{ form.confirm_password(class="form-control") }}
+                        {% for error in form.confirm_password.errors %}
                             <div class="text-danger small">{{ error }}</div>
                         {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                        {{ form.role.label(class="form-label") }}
-                        {{ form.role(class="form-select") }}
-                        {% for error in form.role.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                        <div class="form-text">
-                            <small class="text-muted">
-                                Note: Sellers must be verified by admin before they can accept transactions.
-                            </small>
-                        </div>
                     </div>
 
                     <div class="d-grid">

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Create Transaction - TrustCart{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i data-feather="plus-circle" class="text-primary" style="width: 48px; height: 48px;"></i>
+                    <h3 class="mt-2">Create New Deal</h3>
+                    <p class="text-muted">Enter the product details and terms of the deal</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Deal Name -->
+                    <div class="mb-3">
+                        <label for="deal_name" class="form-label">Deal Name</label>
+                        <input type="text" name="deal_name" class="form-control" placeholder="Deal Name" required>
+                    </div>
+
+                    <!-- Select Category -->
+                    <div class="mb-3">
+                        <label class="form-label">Select Category</label>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary category-btn" data-value="services">Services</button>
+                            <button type="button" class="btn btn-outline-primary category-btn active" data-value="products">Products</button>
+                        </div>
+                        <input type="hidden" name="category" id="categoryInput" value="products">
+                    </div>
+
+                    <!-- Subcategory -->
+                    <div class="mb-3">
+                        <label class="form-label">Subcategory</label>
+                        <select name="subcategory" id="subcategorySelect" class="form-select" required>
+                            <option value="">Select product type</option>
+                        </select>
+                    </div>
+
+                    <!-- Role Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Your Role in this Deal</label>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary role-btn" data-value="buyer">I'm the Buyer</button>
+                            <button type="button" class="btn btn-outline-primary role-btn active" data-value="seller">I'm the Seller</button>
+                        </div>
+                        <input type="hidden" name="role" id="roleInput" value="seller">
+                    </div>
+
+                    <!-- Counterparty Selection -->
+                    <div class="mb-3" id="counterparty-section" style="display: none;">
+                        <label for="counterparty_id" class="form-label">Select the Other Party</label>
+                        <select name="counterparty_id" id="counterparty_id" class="form-select" required>
+                            <option value="">Select a user</option>
+                            {% for user in all_users %}
+                                {% if user.id != current_user.id %}
+                                    <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Product Description -->
+                    <div class="mb-3">
+                        <label class="form-label">Product Description</label>
+                        <textarea name="description" class="form-control" placeholder="Product details and specifications" rows="4"></textarea>
+                    </div>
+
+                    <!-- Product Price -->
+                    <div class="mb-3">
+                        <label class="form-label">Product Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="text" name="price" class="form-control" placeholder="Product price amount">
+                        </div>
+                    </div>
+
+                    <!-- Review Period -->
+                    <div class="mb-3">
+                        <label class="form-label">Product Review Period (Days)</label>
+                        <input type="number" name="review_period" class="form-control" value="1" min="1">
+                    </div>
+
+                    <!-- Product Images -->
+                    <div class="mb-3">
+                        <label class="form-label">Product Images (Optional)</label>
+                        <input type="file" name="images" class="form-control" multiple>
+                        <small class="form-text text-muted">Max 3 images</small>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ url_for('unified_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for Dynamic Interaction -->
+<script>
+    const subcategories = {
+        products: ['Electronics', 'Books', 'Clothing', 'Software', 'Accessories'],
+        services: ['Consulting', 'Development', 'Design', 'Marketing', 'Tutoring']
+    };
+
+    function updateSubcategories(category) {
+        const subSelect = document.getElementById("subcategorySelect");
+        subSelect.innerHTML = '<option value="">Select product type</option>';
+        if (subcategories[category]) {
+            subcategories[category].forEach(sub => {
+                const opt = document.createElement("option");
+                opt.value = sub.toLowerCase();
+                opt.textContent = sub;
+                subSelect.appendChild(opt);
+            });
+        }
+    }
+
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('active', 'btn-primary');
+                b.classList.add('btn-outline-secondary');
+            });
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('active', 'btn-primary');
+            const selectedCategory = this.dataset.value;
+            document.getElementById('categoryInput').value = selectedCategory;
+            updateSubcategories(selectedCategory);
+        });
+    });
+
+    document.querySelectorAll('.role-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.role-btn').forEach(b => {
+                b.classList.remove('active', 'btn-primary');
+                b.classList.add('btn-outline-secondary');
+            });
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('active', 'btn-primary');
+            const selectedRole = this.dataset.value;
+            document.getElementById("roleInput").value = selectedRole;
+            document.getElementById("counterparty-section").style.display = "block";
+        });
+    });
+
+    // Initial setup
+    window.addEventListener("DOMContentLoaded", () => {
+        updateSubcategories(document.getElementById("categoryInput").value);
+        if (document.getElementById("roleInput").value) {
+            document.getElementById("counterparty-section").style.display = "block";
+        }
+    });
+</script>
+{% endblock %}

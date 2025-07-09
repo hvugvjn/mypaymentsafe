@@ -24,9 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Notification stream error:", event);
             // Reconnect after 5 seconds
             setTimeout(() => {
-                if (eventSource.readyState === EventSource.CLOSED) {
-                    location.reload(); // Reload page to restart connection
-                }
+                // Disabled auto-reload to prevent unwanted page refreshes
+                // if (eventSource.readyState === EventSource.CLOSED) {
+                //     location.reload(); // Reload page to restart connection
+                // }
             }, 5000);
         };
     }

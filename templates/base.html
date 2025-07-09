@@ -1,69 +1,172 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TrustCart - Secure Digital Mediator{% endblock %}</title>
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.css" rel="stylesheet">
+    <title>{% block title %}MyPaymentSafe - Secure Digital Mediator{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f8fd;
+            font-family: 'Inter', sans-serif;
+            color: #0d1b2a;
+        }
+
+        .navbar {
+            background-color: transparent;
+            padding: 1.2rem 2rem;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #001f4d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-brand svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-link {
+            color: #001f4d !important;
+            font-weight: 500;
+        }
+
+        .btn-primary, .btn-success, .btn-info, .btn-danger {
+            background-color: #001f4d;
+            color: #fff;
+            padding: 0.6rem 1.4rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #003080;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: none;
+        }
+
+        .badge {
+            padding: 0.4em 0.8em;
+            font-size: 0.85em;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+
+        .badge.bg-info {
+            background-color: #d9ecff !important;
+            color: #003080 !important;
+        }
+
+        .badge.bg-success {
+            background-color: #d1f7e2 !important;
+            color: #006644 !important;
+        }
+
+        .badge.bg-danger {
+            background-color: #ffe0e0 !important;
+            color: #cc0000 !important;
+        }
+
+        .badge.bg-warning {
+            background-color: #fff7cc !important;
+            color: #997a00 !important;
+        }
+
+        .footer {
+            background-color: #f0f4f9;
+            color: #7a869a;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-menu {
+            min-width: 200px;
+        }
+
+        @media (max-width: 767px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            h1, h2, h3, h4 {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                margin-bottom: 1rem;
+            }
+
+            .footer .row > div {
+                text-align: center !important;
+            }
+        }
+    </style>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
-                <i data-feather="shield-check"></i> TrustCart
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#001f4d">
+                    <path d="M420-360h120l-23-129q20-10 31.5-29t11.5-42q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 23 11.5 42t31.5 29l-23 129Zm60 280q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q104-33 172-132t68-220v-189l-240-90-240 90v189q0 121 68 220t172 132Zm0-316Z"/>
+                </svg>
+                <span>MyPaymentSafe</span>
             </a>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     {% if current_user.is_authenticated %}
-                        {% if current_user.is_admin() %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
-                            </li>
-                        {% elif current_user.is_seller() %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('seller_dashboard') }}">Seller Dashboard</a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('buyer_dashboard') }}">My Transactions</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('create_transaction') }}">Create Transaction</a>
-                            </li>
-                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('unified_dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('create_transaction') }}">Transactions</a>
+                        </li>
                     {% endif %}
                 </ul>
-                
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
-                                <i data-feather="bell"></i>
-                                <span class="badge bg-danger notification-count" style="display: none;">0</span>
-                            </a>
-                            <ul class="dropdown-menu notification-menu">
-                                <li><h6 class="dropdown-header">Notifications</h6></li>
-                                <div class="notification-list">
-                                    <li><span class="dropdown-item-text text-muted">No new notifications</span></li>
-                                </div>
-                            </ul>
-                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <i data-feather="user"></i> {{ current_user.username }}
                             </a>
                             <ul class="dropdown-menu">
                                 <li><span class="dropdown-item-text">{{ current_user.email }}</span></li>
-                                <li><span class="dropdown-item-text text-muted">{{ current_user.role.title() }}</span></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Log Out</a></li>
                             </ul>
                         </li>
                     {% else %}
@@ -79,6 +182,7 @@
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main class="container my-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -90,31 +194,65 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-dark text-light py-4 mt-5">
+    <!-- Footer -->
+    <footer class="footer py-4 mt-5">
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h5>TrustCart</h5>
-                    <p class="text-muted">Secure Digital Mediator for Safe Online Transactions</p>
+                    <div class="footer-brand">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#7a869a">
+                            <path d="M420-360h120l-23-129q20-10 31.5-29t11.5-42q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 23 11.5 42t31.5 29l-23 129Zm60 280q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q104-33 172-132t68-220v-189l-240-90-240 90v189q0 121 68 220t172 132Zm0-316Z"/>
+                        </svg>
+                        <h6 class="fw-bold mb-0">MyPaymentSafe</h6>
+                    </div>
+                    <p class="mb-0">Secure Escrow Platform for Digital Transactions</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="text-muted">&copy; 2025 TrustCart. All rights reserved.</p>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <p class="mb-0">&copy; 2025 MyPaymentSafe. All rights reserved.</p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.js"></script>
     <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
-    {% block scripts %}{% endblock %}
-    
-    <script>
-        feather.replace();
-    </script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+
+    <script> feather.replace(); </script>
+    {% block scripts %}<script>
+  $(document).ready(function() {
+    $('#other_party').select2({
+      placeholder: 'Search for a user...',
+      width: 'resolve',
+      ajax: {
+        url: '/search_users',
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term
+          };
+        },
+        processResults: function (data) {
+          return {
+            results: data.map(username => ({
+              id: username,
+              text: username
+            }))
+          };
+        },
+        cache: true
+      },
+      minimumInputLength: 1
+    });
+  });
+</script>
+{% endblock %}
 </body>
 </html>

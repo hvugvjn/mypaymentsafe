@@ -1,24 +1,25 @@
 from flask import url_for, render_template
 from flask_mail import Message
-from app import mail, app
+
 import logging
 
-def send_email_verification(email, token):
+def send_email_verification(app, mail, email, token):
     """Send email verification message"""
     try:
         with app.app_context():
             msg = Message(
-                'Verify Your TrustCart Account',
+                subject='Verify Your TrustCart Account',
                 recipients=[email]
             )
             verification_url = url_for('verify_email', token=token, _external=True)
             msg.html = render_template('emails/verify_email.html', verification_url=verification_url)
             mail.send(msg)
-            logging.info(f"Email verification sent to {email}")
+            logging.info(f"[EMAIL SENT] Verification email sent to {email}")
     except Exception as e:
-        logging.error(f"Failed to send email verification to {email}: {str(e)}")
+        logging.error(f"[EMAIL ERROR] Failed to send verification to {email}: {str(e)}")
 
-def send_password_reset(email, token):
+
+def send_password_reset(app, mail,email, token):
     """Send password reset message"""
     try:
         with app.app_context():
@@ -39,7 +40,7 @@ def send_password_reset(email, token):
     except Exception as e:
         logging.error(f"Failed to send password reset to {email}: {str(e)}")
 
-def send_transaction_notification(email, title, message):
+def send_transaction_notification(app, mail, email, title, message):
     """Send transaction notification"""
     try:
         with app.app_context():

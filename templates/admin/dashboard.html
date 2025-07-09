@@ -1,113 +1,142 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard - TrustCart{% endblock %}
+{% block title %}Admin Dashboard - MyPaymentSafe{% endblock %}
 
 {% block content %}
-<h1><i data-feather="settings"></i> Admin Dashboard</h1>
+<!-- Hero Section -->
+<section class="hero-section mb-5">
+    <div class="container text-center">
+        <div class="d-flex justify-content-center align-items-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#001f4d" class="me-3">
+                <path d="M420-360h120l-23-129q20-10 31.5-29t11.5-42q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 23 11.5 42t31.5 29l-23 129Zm60 280q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Zm0-84q104-33 172-132t68-220v-189l-240-90-240 90v189q0 121 68 220t172 132Zm0-316Z"/>
+            </svg>
+            <h1 class="fw-bold display-5 m-0">Admin Escrow Dashboard</h1>
+        </div>
+        <p class="lead mt-3">Oversee every transaction happening on the platform in real-time.</p>
+    </div>
+</section>
 
-<!-- Stats Cards -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <i data-feather="users" class="text-primary mb-2" style="width: 32px; height: 32px;"></i>
-                <h4>{{ total_users }}</h4>
-                <p class="text-muted mb-0">Total Users</p>
+<!-- Admin Stats -->
+<div class="container mb-5">
+    <div class="row text-center g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i data-feather="inbox" class="mb-3" style="width: 32px; height: 32px;"></i>
+                    <h5 class="card-title">Available Transactions</h5>
+                    <p class="card-text text-muted">{{ available_count }} transaction(s) waiting for sellers</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <i data-feather="activity" class="text-info mb-2" style="width: 32px; height: 32px;"></i>
-                <h4>{{ total_transactions }}</h4>
-                <p class="text-muted mb-0">Total Transactions</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <i data-feather="check-circle" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
-                <h4>{{ completed_transactions }}</h4>
-                <p class="text-muted mb-0">Completed</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <i data-feather="user-check" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
-                <h4>{{ pending_sellers|length }}</h4>
-                <p class="text-muted mb-0">Pending Sellers</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Actions -->
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h5><i data-feather="list"></i> Quick Actions</h5>
-                <div class="d-grid gap-2">
-                    <a href="{{ url_for('admin_transactions') }}" class="btn btn-outline-primary">
-                        <i data-feather="activity"></i> Manage All Transactions
-                    </a>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i data-feather="activity" class="mb-3" style="width: 32px; height: 32px;"></i>
+                    <h5 class="card-title">Active Transactions</h5>
+                    <p class="card-text text-muted">{{ active_count }} transaction(s) in progress</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Pending Seller Verifications -->
-<div class="card">
-    <div class="card-header">
-        <h5><i data-feather="user-check"></i> Pending Seller Verifications</h5>
-    </div>
-    <div class="card-body">
-        {% if pending_sellers %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Registration Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for seller in pending_sellers %}
-                            <tr>
-                                <td>
-                                    <i data-feather="user"></i> {{ seller.username }}
-                                </td>
-                                <td>{{ seller.email }}</td>
-                                <td>{{ seller.created_at.strftime('%B %d, %Y') }}</td>
-                                <td>
-                                    <form method="POST" action="{{ url_for('verify_seller', id=seller.id) }}" class="d-inline">
-                                        <button type="submit" name="action" value="approve" class="btn btn-success btn-sm" onclick="return confirm('Approve this seller?')">
-                                            <i data-feather="check"></i> Approve
-                                        </button>
-                                        <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm" onclick="return confirm('Reject and remove this seller?')">
-                                            <i data-feather="x"></i> Reject
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <div class="text-center py-4">
-                <i data-feather="user-check" style="width: 48px; height: 48px;" class="text-muted mb-3"></i>
-                <h6>No Pending Verifications</h6>
-                <p class="text-muted">All sellers have been verified.</p>
-            </div>
-        {% endif %}
-    </div>
+<!-- All Transactions -->
+<div class="container">
+    <h3 class="mb-4">All Transactions (Admin View)</h3>
+
+    {% if transactions %}
+        <div class="row g-3">
+            {% for transaction in transactions %}
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1">{{ transaction.title }}</h5>
+                                <p class="text-muted mb-2">
+                                    {{ transaction.description[:100] }}{% if transaction.description|length > 100 %}...{% endif %}
+                                </p>
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <span class="
+                                        {% if transaction.status == 'pending' %}status-pending
+                                        {% elif transaction.status == 'in_progress' %}status-in-progress
+                                        {% elif transaction.status == 'completed' %}status-completed
+                                        {% elif transaction.status == 'disputed' %}status-disputed
+                                        {% endif %}
+                                    ">
+                                        {{ transaction.status.replace('_', ' ').title() }}
+                                    </span>
+                                    <small class="text-muted">
+                                        Buyer: {{ transaction.buyer.username if transaction.buyer else 'Not assigned' }} |
+                                        Seller: {{ transaction.seller.username if transaction.seller else 'Not assigned' }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="text-md-end mt-3 mt-md-0">
+                                <h5 class="text-success mb-1">₹{{ "%.2f"|format(transaction.amount) }}</h5>
+                                <small class="text-muted">{{ transaction.created_at.strftime('%B %d, %Y') }}</small>
+                                <div class="mt-2">
+                                    <a href="{{ url_for('transaction_detail', id=transaction.id) }}" class="btn btn-outline-primary btn-sm">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i data-feather="shopping-cart" style="width: 64px; height: 64px;" class="text-muted mb-3"></i>
+            <h3>No Transactions Yet</h3>
+            <p class="text-muted">Transactions will appear here as soon as they're created.</p>
+        </div>
+    {% endif %}
 </div>
+
+<!-- Status Styling -->
+<style>
+    .hero-section {
+        padding: 4rem 0;
+        background-color: #f8fafd;
+        border-radius: 16px;
+        margin-top: 2rem;
+    }
+
+    .status-pending {
+        color: #997a00;
+        background-color: #fff7cc;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-in-progress {
+        color: #003080;
+        background-color: #d9ecff;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-completed {
+        color: #006644;
+        background-color: #d1f7e2;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-disputed {
+        color: #cc0000;
+        background-color: #ffe0e0;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+</style>
 {% endblock %}

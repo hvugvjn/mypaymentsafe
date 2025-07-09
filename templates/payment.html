@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Complete Your Payment - MyPaymentSafe</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8fafd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .payment-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #001f4d;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .amount-details {
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .amount-details p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .amount-details strong {
+            float: right;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 16px;
+        }
+
+        #rzp-button {
+            background-color: #001f4d;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        #rzp-button:hover {
+            background-color: #003080;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Complete Payment</h1>
+
+        <div class="amount-details">
+            <p>Product Price <strong>₹{{ '%.2f' % amount }}</strong></p>
+            <p>Platform Fee (7%) <strong>₹{{ '%.2f' % platform_fee }}</strong></p>
+            <hr>
+            <p class="total">Total <strong>₹{{ '%.2f' % total }}</strong></p>
+        </div>
+
+        <form id="payment-form" action="/verify_payment/{{ transaction.id }}" method="POST">
+            <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+            <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+            <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+            <button id="rzp-button">Pay Now</button>
+        </form>
+    </div>
+
+    <script>
+        var options = {
+            "key": "{{ key_id }}",
+            "amount": "{{ (total * 100)|int }}", // in paise
+            "currency": "INR",
+            "name": "MyPaymentSafe",
+            "description": "Secure Transaction",
+            "order_id": "{{ order_id }}",
+            "handler": function (response){
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                document.getElementById("payment-form").submit();
+            },
+            "theme": {
+                "color": "#001f4d"
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html>
