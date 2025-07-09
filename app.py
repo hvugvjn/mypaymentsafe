@@ -27,6 +27,29 @@ from email_service import (
     send_transaction_notification
 )
 import razorpay
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from db import db, DATABASE_URL
+from dotenv import load_dotenv
+
+load_dotenv()
+app = Flask(__name__)
+
+# Database configuration
+db_url = os.getenv('DATABASE_URL')
+
+# Fix for Render's PostgreSQL URL format
+if db_url and db_url.startswith('postgres://'):
+    db_url = db_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+
+
+
+
 
 RAZORPAY_KEY_ID = "rzp_test_XVt2SV0Q5ACLfe"  # 🔁 Define this so you can use it in templates
 RAZORPAY_KEY_SECRET = "8GzctFWrAX2TvskLkjZVdUPE"
@@ -47,7 +70,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.secret_key = "dev_12345_mypaymentsafe_secret"
 
 # --- Database Configuration ---
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:5432/trustcart"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
