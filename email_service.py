@@ -3,7 +3,7 @@ from flask_mail import Message
 
 import logging
 
-def send_email_verification(app, mail, email, token):
+def send_email_verification(email, token):
     """Send email verification message"""
     try:
         with app.app_context():

@@ -348,7 +348,7 @@ def verify_payment(transaction_id):
     db.session.commit()
 
     flash("Payment Successful. You may now release the funds when you're ready.")
-    return redirect(url_for('view_transaction', transaction_id=transaction.id))
+    return redirect(url_for('transaction_detail', id=transaction.id))
 
 
 @app.route('/transaction/<int:id>/reject', methods=['POST'])
