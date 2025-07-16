@@ -5,12 +5,13 @@ import uuid
 import json
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
-from flask_mail import Mail
+from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.utils import secure_filename
 from flask_migrate import Migrate
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 # OLD:
 # from flask_mail import Mail
 
@@ -31,9 +32,16 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from db import db, DATABASE_URL
 from dotenv import load_dotenv
+from flask_talisman import Talisman
+from forms import PasswordResetRequestForm ,  PasswordResetForm
+from models import User
+
+
 
 load_dotenv()
 app = Flask(__name__)
+
+Talisman(app)
 
 # Database configuration
 db_url = os.getenv('DATABASE_URL')
@@ -68,6 +76,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # --- Secret Key for Sessions ---
 app.secret_key = "dev_12345_mypaymentsafe_secret"
+s = URLSafeTimedSerializer(app.secret_key)
 
 # --- Database Configuration ---
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
@@ -105,6 +114,8 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 
 migrate = Migrate(app, db)
+
+
 
 # --- User Loader ---
 @login_manager.user_loader
@@ -167,9 +178,57 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("login"))
 
-@app.route('/reset-password')
-def reset_password_request():
-    return "Reset Password Page - Coming Soon"
+def send_email_verification(user_email, token):
+    verification_url = url_for('verify_email', token=token, _external=True)
+
+    msg = Message(
+        subject='Verify Your TrustCart Account',
+        recipients=[user_email],
+        sender='MyPaymentSafe <youremail@gmail.com>'
+    )
+    # ✅ Correct path to template
+    msg.html = render_template('emails/verify_email.html', link=verification_url)
+    mail.send(msg)
+
+@app.route('/forgot', methods=['GET', 'POST'])
+def forgot_password():
+    form = PasswordResetRequestForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = s.dumps(email, salt='email-reset')
+            reset_link = url_for('reset_password', token=token, _external=True)
+            msg = Message('Reset Your Password', sender='your_email@gmail.com', recipients=[email])
+            msg.html = render_template('emails/email_reset.html', link=reset_link)
+            mail.send(msg)
+            flash('Reset link sent to your email.', 'success')
+        else:
+            flash('Email not found.', 'danger')
+
+    return render_template('forgot_password.html', form=form)
+
+@app.route('/reset/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='email-reset', max_age=3600)
+    except (SignatureExpired, BadSignature):
+        return "Reset link expired or invalid."
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return "User does not exist."
+
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash("Your password has been reset.", "success")
+        return redirect(url_for('login'))
+
+    return render_template('reset_password.html', form=form)
+
 @app.route('/transaction/create', methods=['GET', 'POST'])
 @login_required
 def create_transaction():
