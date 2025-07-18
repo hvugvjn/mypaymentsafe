@@ -647,9 +647,7 @@ def create_admin():
         logging.info("Admin user created: admin@trustcart.com / admin123")
 
 # --- Setup on App Start ---
-with app.app_context():
-    db.create_all()
-    create_admin()
+
 
 
 with app.app_context():
