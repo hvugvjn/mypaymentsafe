@@ -1,5 +1,27 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 
-# Elastic Beanstalk Files
+# Environment variables and secret files
+.env
+
+# Flask instance folder
+instance/
+
+# SQLite and other database files
+*.db
+*.sqlite3
+
+# Log files
+*.log
+
+# Alembic migration history
+migrations/
+
+# Elastic Beanstalk files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
