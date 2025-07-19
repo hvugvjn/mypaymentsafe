@@ -192,12 +192,12 @@ def register_user():
         return redirect(url_for("login_view"))
     return render_template("auth/register.html", form=form)
 
-@app.route("/logout")
+@app.route("/logout", endpoint="logout")
 @login_required
-def logout():
+def logout_user_view():
     logout_user()
     flash("You have been logged out.", "info")
-    return redirect(url_for("login"))
+    return redirect(url_for("login_view"))
 
 def send_email_verification(user_email, token):
     verification_url = url_for('handle_email_verification', token=token, _external=True)
@@ -220,7 +220,7 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         if user:
             token = s.dumps(email, salt='email-reset')
-            reset_link = url_for('reset_password', token=token, _external=True)
+            reset_link = url_for('reset_new', token=token, _external=True)
             msg = Message('Reset Your Password', sender='your_email@gmail.com', recipients=[email])
             msg.html = render_template('emails/email_reset.html', link=reset_link)
             mail.send(msg)
