@@ -38,22 +38,24 @@ from models import User
 
 
 
-load_dotenv()
+
 app = Flask(__name__)
 
 Talisman(app)
 
-# Database configuration
-db_url = os.getenv('DATABASE_URL')
+## --- Database Configuration ---
+# This NEW code gets the DATABASE_URL from the AWS server's environment
+db_url = os.environ.get('DATABASE_URL')
 
-# Fix for Render's PostgreSQL URL format
+# Fix for PostgreSQL URL format if needed
 if db_url and db_url.startswith('postgres://'):
     db_url = db_url.replace('postgres://', 'postgresql://', 1)
-
+    
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db.init_app(app)
+# This line will be moved down with the other initializations
+# db.init_app(app)
 
 
 
@@ -79,7 +81,11 @@ app.secret_key = "dev_12345_mypaymentsafe_secret"
 s = URLSafeTimedSerializer(app.secret_key)
 
 # --- Database Configuration ---
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+# Directly assign full DATABASE URI without using os.getenv
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql://postgres:postgres@database-1-instance-1.cp2uke2aglvf.ap-south-1.rds.amazonaws.com:5432/trustcart"
+)
+
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
