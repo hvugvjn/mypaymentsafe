@@ -47,7 +47,7 @@ def inject_user():
     return dict(current_user=current_user)
 
 # Authentication routes
-@app.route("/")
+@app.route("/", endpoint='index')
 def home():
     return render_template("index.html")
 
