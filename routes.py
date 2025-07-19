@@ -68,7 +68,7 @@ def login():
     return render_template("auth/login.html", form=form)
 
 @app.route("/register", methods=["GET", "POST"])
-def register_user():
+def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
