@@ -200,7 +200,7 @@ def logout():
     return redirect(url_for("login"))
 
 def send_email_verification(user_email, token):
-    verification_url = url_for('verify_email', token=token, _external=True)
+    verification_url = url_for('handle_email_verification', token=token, _external=True)
 
     msg = Message(
         subject='Verify Your TrustCart Account',
@@ -650,23 +650,23 @@ def complete_transaction(transaction_id):
     return redirect(url_for('transaction_detail', id=transaction_id))
 
 @app.route('/verify_email/<token>')
-def verify_email(token):
+def handle_email_verification(token):
     try:
         user = User.query.get(int(token))
         if not user:
             flash("Invalid verification link.", "danger")
-            return redirect(url_for("login"))
+            return redirect(url_for("login_view"))
 
         user.email_verified = True
         user.is_verified = True
         db.session.commit()
 
         flash("Email verified successfully. You may now log in.", "success")
-        return redirect(url_for("login"))
+        return redirect(url_for("login_view"))
 
     except Exception as e:
         flash("Verification failed. Please try again.", "danger")
-        return redirect(url_for("login"))
+        return redirect(url_for("login_view"))
 
 
 # --- Admin Auto-Creation ---
