@@ -192,12 +192,7 @@ def register_user():
         return redirect(url_for("login_view"))
     return render_template("auth/register.html", form=form)
 
-@app.route("/logout", endpoint="logout")
-@login_required
-def logout_user_view():
-    logout_user()
-    flash("You have been logged out.", "info")
-    return redirect(url_for("login_view"))
+
 
 def send_email_verification(user_email, token):
     verification_url = url_for('handle_email_verification', token=token, _external=True)
