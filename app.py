@@ -153,7 +153,7 @@ def home():
     return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
-def login():
+def login_view():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
