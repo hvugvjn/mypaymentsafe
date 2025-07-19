@@ -1,3 +1,4 @@
+python==3.10.*
 aiohappyeyeballs==2.4.4
 aiohttp==3.11.11
 aiohttp-retry==2.8.3
