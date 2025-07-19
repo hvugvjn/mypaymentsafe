@@ -52,7 +52,7 @@ def home():
     return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
-def login_view():
+def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -88,7 +88,7 @@ def register_user():
         token = str(user.id)  # Replace with secure token logic if needed
         send_email_verification(user.email, token)
         flash("Registration successful! Please log in.", "success")
-        return redirect(url_for("login_view"))
+        return redirect(url_for("login"))
     return render_template("auth/register.html", form=form)
 
 
@@ -97,7 +97,7 @@ def send_email_verification(user_email, token):
     verification_url = url_for('handle_email_verification', token=token, _external=True)
 
     msg = Message(
-        subject='Verify Your TrustCart Account',
+        subject='Verify Your MyPaymentSafe Account',
         recipients=[user_email],
         sender='MyPaymentSafe <youremail@gmail.com>'
     )
@@ -140,7 +140,7 @@ def reset_password(token):
         user.set_password(form.password.data)
         db.session.commit()
         flash("Your password has been reset.", "success")
-        return redirect(url_for('login_view'))
+        return redirect(url_for('login'))
 
     return render_template('reset_password.html', form=form)
 @app.route('/logout')
@@ -555,18 +555,18 @@ def handle_email_verification(token):
         user = User.query.get(int(token))
         if not user:
             flash("Invalid verification link.", "danger")
-            return redirect(url_for("login_view"))
+            return redirect(url_for("login"))
 
         user.email_verified = True
         user.is_verified = True
         db.session.commit()
 
         flash("Email verified successfully. You may now log in.", "success")
-        return redirect(url_for("login_view"))
+        return redirect(url_for("login"))
 
     except Exception as e:
         flash("Verification failed. Please try again.", "danger")
-        return redirect(url_for("login_view"))
+        return redirect(url_for("login"))
 
 
 
