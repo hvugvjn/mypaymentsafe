@@ -169,7 +169,7 @@ def login_view():
     return render_template("auth/login.html", form=form)
 
 @app.route("/register", methods=["GET", "POST"])
-def register():
+def register_user():
     form = RegistrationForm()
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
@@ -189,7 +189,7 @@ def register():
         token = str(user.id)  # Replace with secure token logic if needed
         send_email_verification(user.email, token)
         flash("Registration successful! Please log in.", "success")
-        return redirect(url_for("login"))
+        return redirect(url_for("login_view"))
     return render_template("auth/register.html", form=form)
 
 @app.route("/logout")
