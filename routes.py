@@ -16,7 +16,6 @@ from forms import (
     ChatMessageForm,
     PasswordResetRequestForm,
     PasswordResetForm,
-    DealForm
 )
 from email_service import send_email_verification, send_transaction_notification, send_password_reset
 from decorators import admin_required, seller_required, verified_seller_required
