@@ -1,18 +1,26 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify, Response
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
+from werkzeug.utils import secure_filename
 from datetime import datetime
 import json
 import time
 import os
+
 from app import app, db
 from models import User, Transaction, ChatMessage, Notification
-from forms import LoginForm, RegistrationForm, TransactionForm, ChatMessageForm, PasswordResetRequestForm, PasswordResetForm
+from forms import (
+    LoginForm,
+    RegistrationForm,
+    TransactionForm,
+    ChatMessageForm,
+    PasswordResetRequestForm,
+    PasswordResetForm,
+    DealForm
+)
 from email_service import send_email_verification, send_transaction_notification, send_password_reset
 from decorators import admin_required, seller_required, verified_seller_required
-from .models import User
-from .forms import DealForm
-from werkzeug.utils import secure_filename
+
 
 
 UPLOAD_FOLDER = 'static/uploads'
