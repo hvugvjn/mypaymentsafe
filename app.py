@@ -83,7 +83,7 @@ s = URLSafeTimedSerializer(app.secret_key)
 # --- Database Configuration ---
 # Directly assign full DATABASE URI without using os.getenv
 app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "postgresql://postgres:postgres@database-1-instance-1.cp2uke2aglvf.ap-south-1.rds.amazonaws.com:5432/trustcart"
+    "postgresql://escrow_db_a6ed_user:iTaLjdvRPMBrLdIjHXlQPaALKlAjgjR1@dpg-d1to2rbipnbc73ci2dog-a.oregon-postgres.render.com/escrow_db_a6ed"
 )
 
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
@@ -636,6 +636,26 @@ def complete_transaction(transaction_id):
     flash("Transaction marked as completed.", "success")
     return redirect(url_for('transaction_detail', id=transaction_id))
 
+@app.route('/verify_email/<token>')
+def verify_email(token):
+    try:
+        user = User.query.get(int(token))
+        if not user:
+            flash("Invalid verification link.", "danger")
+            return redirect(url_for("login"))
+
+        user.email_verified = True
+        user.is_verified = True
+        db.session.commit()
+
+        flash("Email verified successfully. You may now log in.", "success")
+        return redirect(url_for("login"))
+
+    except Exception as e:
+        flash("Verification failed. Please try again.", "danger")
+        return redirect(url_for("login"))
+
+
 # --- Admin Auto-Creation ---
 def create_admin():
     admin = User.query.filter_by(email='admin@trustcart.com').first()
@@ -661,3 +681,8 @@ with app.app_context():
     create_admin()
 
 application = app
+
+
+if __name__ == "__main__":
+    print("🔥 Flask server starting...")
+    app.run(debug=True)
