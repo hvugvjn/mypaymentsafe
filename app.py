@@ -8,33 +8,46 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.security import generate_password_hash,check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_migrate import Migrate
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-# OLD:
-# from flask_mail import Mail
+from dotenv import load_dotenv
+from flask_talisman import Talisman
 
-# NEW:
+# Extensions
 from extension import mail
+from db import db, DATABASE_URL
 
+# Forms
+from forms import (
+    RegistrationForm, 
+    TransactionForm, 
+    ChatMessageForm, 
+    LoginForm,
+    PasswordResetRequestForm,  
+    PasswordResetForm
+)
 
-# Local imports
-from forms import RegistrationForm, TransactionForm, ChatMessageForm, LoginForm
-from models import db, Transaction, User, ChatMessage, Product, SellerToBuyerRequest, Notification
+# Models
+from models import (
+    User, 
+    Transaction, 
+    ChatMessage, 
+    Product, 
+    SellerToBuyerRequest, 
+    Notification
+)
+
+# Services
 from email_service import (
     send_email_verification,
     send_password_reset,
     send_transaction_notification
 )
+
+# Payment
 import razorpay
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from db import db, DATABASE_URL
-from dotenv import load_dotenv
-from flask_talisman import Talisman
-from forms import PasswordResetRequestForm ,  PasswordResetForm
-from models import User
 
 
 
