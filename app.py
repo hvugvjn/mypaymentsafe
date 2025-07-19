@@ -230,7 +230,7 @@ def forgot_password():
 
     return render_template('forgot_password.html', form=form)
 
-@app.route('/reset/<token>', methods=['GET', 'POST'])
+@app.route('/reset/<token>', methods=['GET', 'POST'], endpoint="reset_new")
 def reset_password(token):
     try:
         email = s.loads(token, salt='email-reset', max_age=3600)
@@ -246,7 +246,7 @@ def reset_password(token):
         user.set_password(form.password.data)
         db.session.commit()
         flash("Your password has been reset.", "success")
-        return redirect(url_for('login'))
+        return redirect(url_for('login_view'))
 
     return render_template('reset_password.html', form=form)
 
